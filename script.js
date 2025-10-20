@@ -44,6 +44,14 @@ function populateSpettri() {
   });
 }
 
+// Calcolo limiti asse Y escludendo outlier
+function getYAxisRange(values) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const low = sorted[Math.floor(sorted.length * 0.01)];
+  const high = sorted[Math.floor(sorted.length * 0.99)];
+  return [low, high];
+}
+
 document.getElementById('plotBtn').addEventListener('click', async () => {
   const pigment = pigmentSelect.value;
   const strumento = strumentoSelect.value;
@@ -53,26 +61,19 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
   const response = await fetch(path);
   const text = await response.text();
 
-  // 1️⃣ Trova l'inizio dei dati
+  // Trova la riga "Begin Spectral Data"
   const startIndex = text.indexOf('>>>>>Begin Spectral Data<<<<<');
-  if (startIndex === -1) {
-    alert('Formato file non riconosciuto!');
-    return;
-  }
-
-  // 2️⃣ Prendi solo la parte numerica dopo la riga dei dati
   const dataSection = text
     .slice(startIndex)
     .split('\n')
-    .slice(1) // salta la riga ">>>>>Begin Spectral Data<<<<<"
+    .slice(1)
     .map(line => line.trim())
     .filter(line => line.length > 0);
 
   const x = [], y = [];
 
-  // 3️⃣ Converte ogni riga in numeri decimali, sostituendo virgole con punti
   dataSection.forEach(line => {
-    const cleaned = line.replace(',', '.').replace('\t', ' ').replace(/\s+/g, ' ');
+    const cleaned = line.replace(',', '.').replace(/\s+/g, ' ');
     const [aStr, bStr] = cleaned.split(' ');
     const a = parseFloat(aStr);
     const b = parseFloat(bStr);
@@ -82,16 +83,20 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
     }
   });
 
-  // 4️⃣ Plot interattivo
+  // Calcolo limiti escludendo outlier
+  const [yMin, yMax] = getYAxisRange(y);
+
   Plotly.newPlot(plotDiv, [{
     x: x,
     y: y,
     mode: 'lines',
-    name: file
+    name: file,
+    line: { width: 1 }
   }], {
     title: `${pigment} - ${strumento}`,
-    xaxis: { title: 'Wavelength (nm)', autorange: true },
-    yaxis: { title: 'Intensity', autorange: true }
+    xaxis: { title: 'Wavelength (nm)' },
+    yaxis: { title: 'Intensity / Reflectance', range: [yMin, yMax] }
   });
 });
+
 
