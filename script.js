@@ -91,7 +91,7 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
     y: y,
     mode: 'lines',
     name: file,
-    line: { width: 1 }
+    line: { shape: "spline", smoothing: 1.3 }
   }], {
     title: `${pigment} - ${strumento}`,
     xaxis: { title: 'Wavelength (nm)' },
