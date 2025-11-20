@@ -108,19 +108,22 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
     }
   });
 
-const { x: xInterp, y: yInterp } = interpolate(x, y, 10);
+  // 🔹 interpolazione (usata nel grafico)
+  const { x: xInterp, y: yInterp } = interpolate(x, y, 10);
+
+  // 🔹 calcolo range su dati interpolati
+  const [yMin, yMax] = getYAxisRange(yInterp);
 
   Plotly.newPlot(plotDiv, [{
-    x: x,
-    y: y,
+    x: xInterp,
+    y: yInterp,
     mode: 'lines',
     name: file,
-    line: { shape: "spline", smoothing: 1.3 }
+    // spline su dati interpolati → super fluido
+    line: { shape: "spline", smoothing: 1.3, width: 1 }
   }], {
     title: `${pigment} - ${strumento}`,
     xaxis: { title: 'Wavelength (nm)' },
     yaxis: { title: 'Intensity / Reflectance', range: [yMin, yMax] }
   });
 });
-
-
