@@ -44,6 +44,31 @@ function populateSpettri() {
   });
 }
 
+function interpolate(x, y, resolution = 5) {
+  const newX = [];
+  const newY = [];
+
+  for (let i = 0; i < x.length - 1; i++) {
+    const x0 = x[i];
+    const x1 = x[i + 1];
+    const y0 = y[i];
+    const y1 = y[i + 1];
+
+    // numero di punti intermedi: resolution
+    for (let r = 0; r < resolution; r++) {
+      const t = r / resolution;
+      newX.push(x0 + t * (x1 - x0));
+      newY.push(y0 + t * (y1 - y0));
+    }
+  }
+
+  // aggiunge ultimo punto
+  newX.push(x[x.length - 1]);
+  newY.push(y[y.length - 1]);
+
+  return { x: newX, y: newY };
+}
+
 // Calcolo limiti asse Y escludendo outlier
 function getYAxisRange(values) {
   const sorted = [...values].sort((a, b) => a - b);
@@ -83,8 +108,7 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
     }
   });
 
-  // Calcolo limiti escludendo outlier
-  const [yMin, yMax] = getYAxisRange(y);
+const { x: xInterp, y: yInterp } = interpolate(x, y, 10);
 
   Plotly.newPlot(plotDiv, [{
     x: x,
