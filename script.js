@@ -109,7 +109,7 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
   });
 
   // 🔹 interpolazione (usata nel grafico)
-  const { x: xInterp, y: yInterp } = interpolate(x, y, 10);
+  const { x: xInterp, y: yInterp } = interpolate(x, y, 50);
 
   // 🔹 calcolo range su dati interpolati
   const [yMin, yMax] = getYAxisRange(yInterp);
