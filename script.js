@@ -118,9 +118,8 @@ document.getElementById('plotBtn').addEventListener('click', async () => {
     x: xInterp,
     y: yInterp,
     mode: 'lines',
-    name: file,
-    // spline su dati interpolati → super fluido
-    line: { shape: "spline", smoothing: 1.3, width: 1 }
+    type: 'scattergl',
+    line: { shape: 'spline', smoothing: 1.3, width: 1 }
   }], {
     title: `${pigment} - ${strumento}`,
     xaxis: { title: 'Wavelength (nm)' },
